@@ -49,7 +49,7 @@
       </Section>
     </div>
 
-    <div class="column">
+    <div class="column sidebar">
       <Section id="skills" title="Skills">
         <Skills groups={cv.skills} />
       </Section>
@@ -81,13 +81,19 @@
   }
 
   .profile {
-    max-width: 34em;
+    max-width: 36em;
     font-family: var(--profile-font);
     font-weight: var(--profile-weight);
     font-style: var(--profile-style);
-    font-size: clamp(1.25rem, 2.4vw, 1.4375rem);
-    line-height: 1.5;
+    font-size: clamp(1.1875rem, 2vw, 1.3125rem);
+    line-height: 1.55;
+    letter-spacing: -0.005em;
     text-wrap: pretty;
+  }
+
+  /* Narrow column: smaller entry text (read by Entry.svelte). */
+  .sidebar {
+    --entry-body-size: 0.9375rem;
   }
 
   .colophon {
@@ -123,7 +129,7 @@
 
     .profile {
       max-width: none;
-      font-size: 12pt;
+      font-size: 11.5pt;
       line-height: 1.45;
     }
   }

@@ -1,10 +1,10 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import type { IncomingMessage } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig, type Plugin } from 'vite';
 import { cv } from './src/lib/cv.ts';
-import { formatTypography, type FontSetting } from './src/lib/typography-format.ts';
+import { formatConfig, isPresetName } from './src/lib/typography-presets.ts';
 
 /**
  * Serves the CV PDF on the dev server, generated on request from the running page,
@@ -34,7 +34,7 @@ function devPdf(): Plugin {
   };
 }
 
-/** Lets the dev-only Fonts panel save its settings to src/lib/typography.json. */
+/** Lets the dev-only Fonts panel save the chosen preset to src/lib/typography.json. */
 function devTypographyEditor(): Plugin {
   const configPath = fileURLToPath(new URL('./src/lib/typography.json', import.meta.url));
   return {
@@ -48,9 +48,9 @@ function devTypographyEditor(): Plugin {
           return;
         }
         try {
-          const current = JSON.parse(await readFile(configPath, 'utf8'));
-          const next = JSON.parse(await readBody(req));
-          await writeFile(configPath, formatTypography(validateTypography(next, Object.keys(current))));
+          const { preset } = JSON.parse(await readBody(req));
+          if (!isPresetName(preset)) throw new Error(`Unknown preset "${preset}"`);
+          await writeFile(configPath, formatConfig(preset));
           res.end('Saved');
         } catch (error) {
           res.statusCode = 400;
@@ -59,24 +59,6 @@ function devTypographyEditor(): Plugin {
       });
     },
   };
-}
-
-function validateTypography(value: unknown, roles: string[]): Record<string, FontSetting> {
-  if (typeof value !== 'object' || value === null) throw new Error('Expected an object');
-  const config = value as Record<string, Partial<FontSetting>>;
-  for (const role of roles) {
-    const setting = config[role];
-    if (
-      typeof setting?.font !== 'string' ||
-      typeof setting.weight !== 'number' ||
-      setting.weight < 100 ||
-      setting.weight > 900 ||
-      typeof setting.italic !== 'boolean'
-    ) {
-      throw new Error(`Invalid setting for "${role}"`);
-    }
-  }
-  return Object.fromEntries(roles.map((role) => [role, config[role] as FontSetting]));
 }
 
 function readBody(req: IncomingMessage): Promise<string> {

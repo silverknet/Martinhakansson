@@ -1,29 +1,29 @@
 <!--
-  Dev-only font editor (loaded only by `npm run dev`, never in the build or PDF).
-  Changes preview live; Save writes them to src/lib/typography.json.
+  Dev-only font preset switcher (loaded only by `npm run dev`, never in the build or PDF).
+  Flip through presets to preview; Save writes the choice to src/lib/typography.json.
 -->
 <script lang="ts">
-  import { fonts, type FontOption } from '../fonts';
-  import { roleKeys, roles, roleVars, typography, type Typography } from '../typography';
-  import { formatTypography } from '../typography-format';
+  import { fonts, isFontName } from '../fonts';
+  import { roleVars, savedPreset } from '../typography';
+  import { formatConfig, presetNames, presets, roleKeys, type PresetName } from '../typography-presets';
 
   const OPEN_KEY = 'cv-font-panel-open';
-  const groups: FontOption['group'][] = ['Serif', 'Sans', 'Mono'];
-  const fontNames = Object.keys(fonts) as (keyof typeof fonts)[];
 
   let open = $state(readOpen());
-  let saved: Typography = $state(structuredClone(typography));
-  let draft: Typography = $state(structuredClone(typography));
+  let saved: PresetName = $state(savedPreset);
+  let current: PresetName = $state(savedPreset);
   let status = $state('');
   /** Shown when the clipboard is unavailable, so the JSON can be copied by hand. */
   let manualCopy = $state('');
 
-  const dirty = $derived(JSON.stringify(draft) !== JSON.stringify(saved));
+  const index = $derived(presetNames.indexOf(current));
+  const dirty = $derived(current !== saved);
 
-  // Preview the draft by overriding the saved values with inline custom properties on <html>.
+  // Preview the preset by overriding the saved values with inline custom properties on <html>.
   $effect(() => {
     const root = document.documentElement;
-    const applied = roleKeys.flatMap((role) => roleVars(role, draft[role]));
+    const preset = presets[current];
+    const applied = roleKeys.flatMap((role) => roleVars(role, preset[role]));
     for (const [name, value] of applied) root.style.setProperty(name, value);
     return () => {
       for (const [name] of applied) root.style.removeProperty(name);
@@ -46,17 +46,41 @@
     }
   }
 
+  function select(name: PresetName) {
+    current = name;
+    status = '';
+    manualCopy = '';
+  }
+
+  function step(delta: number) {
+    select(presetNames[(index + delta + presetNames.length) % presetNames.length]);
+  }
+
+  /** The preset's name font, so each button previews its own style. */
+  function nameFont(name: PresetName): string {
+    const font = presets[name].name.font;
+    return isFontName(font) ? fonts[font].stack : 'inherit';
+  }
+
+  function onKeydown(event: KeyboardEvent) {
+    if (!open || event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.target instanceof HTMLElement && event.target.closest('input, textarea, select')) return;
+    if (event.key === 'ArrowLeft') step(-1);
+    else if (event.key === 'ArrowRight') step(1);
+    else return;
+    event.preventDefault();
+  }
+
   async function save() {
     status = 'Saving…';
-    const snapshot = $state.snapshot(draft);
     try {
       const response = await fetch('/__typography', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(snapshot),
+        body: JSON.stringify({ preset: current }),
       });
       if (!response.ok) throw new Error(await response.text());
-      saved = snapshot;
+      saved = current;
       status = 'Saved to src/lib/typography.json';
     } catch (error) {
       status = `Save failed: ${error instanceof Error ? error.message : error}`;
@@ -64,7 +88,7 @@
   }
 
   async function copyJson() {
-    const json = formatTypography($state.snapshot(draft));
+    const json = formatConfig(current);
     try {
       await navigator.clipboard.writeText(json);
       manualCopy = '';
@@ -74,63 +98,53 @@
       status = 'Copy the JSON below';
     }
   }
-
-  function reset() {
-    draft = structuredClone($state.snapshot(saved));
-    status = '';
-  }
 </script>
+
+<svelte:window onkeydown={onKeydown} />
 
 <div class="font-panel no-print">
   {#if open}
     <section class="panel" aria-labelledby="font-panel-title">
       <header>
-        <h2 id="font-panel-title">Fonts</h2>
+        <h2 id="font-panel-title">Font presets</h2>
         <button type="button" class="close" onclick={() => (open = false)} aria-label="Close font panel">×</button>
       </header>
-      <p class="hint">Dev only. Changes preview live. Save writes them to the config file.</p>
 
-      <div class="rows">
-        {#each roleKeys as role (role)}
-          <fieldset>
-            <legend>{roles[role]}</legend>
-            <select bind:value={draft[role].font} aria-label="{roles[role]} font">
-              {#each groups as group (group)}
-                <optgroup label={group}>
-                  {#each fontNames.filter((name) => fonts[name].group === group) as name (name)}
-                    <option value={name}>{name}</option>
-                  {/each}
-                </optgroup>
-              {/each}
-            </select>
-            <label class="weight">
-              <input
-                type="range"
-                min="300"
-                max="800"
-                step="50"
-                bind:value={draft[role].weight}
-                aria-label="{roles[role]} weight"
-              />
-              <output>{draft[role].weight}</output>
-            </label>
-            <label class="italic">
-              <input type="checkbox" bind:checked={draft[role].italic} />
-              Italic
-            </label>
-          </fieldset>
-        {/each}
+      <div class="stepper">
+        <button type="button" onclick={() => step(-1)} aria-label="Previous preset">‹</button>
+        <p aria-live="polite">
+          <strong>{current}</strong>
+          <span>{index + 1} / {presetNames.length}</span>
+        </p>
+        <button type="button" onclick={() => step(1)} aria-label="Next preset">›</button>
       </div>
 
+      <ul class="presets">
+        {#each presetNames as name (name)}
+          <li>
+            <button
+              type="button"
+              class:active={name === current}
+              aria-pressed={name === current}
+              onclick={() => select(name)}
+            >
+              <span class="preview" style:font-family={nameFont(name)}>{name}</span>
+              {#if name === saved}<span class="saved-tag">saved</span>{/if}
+            </button>
+          </li>
+        {/each}
+      </ul>
+
+      <p class="hint">Dev only. ← → flips presets. Save makes it the site's font.</p>
+
       {#if manualCopy}
-        <textarea class="manual-copy" readonly rows="6" value={manualCopy} onfocus={(e) => e.currentTarget.select()}
+        <textarea class="manual-copy" readonly rows="3" value={manualCopy} onfocus={(e) => e.currentTarget.select()}
         ></textarea>
       {/if}
 
       <footer>
-        <p class="status" role="status">{status || (dirty ? 'Unsaved changes' : 'Matches saved config')}</p>
+        <p class="status" role="status">{status || (dirty ? 'Not saved yet' : 'This is the saved preset')}</p>
         <button type="button" onclick={copyJson}>Copy JSON</button>
-        <button type="button" onclick={reset} disabled={!dirty}>Reset</button>
         <button type="button" class="primary" onclick={save} disabled={!dirty}>Save</button>
       </footer>
     </section>
@@ -152,8 +166,7 @@
   }
 
   button,
-  select,
-  input {
+  textarea {
     font: inherit;
     color: inherit;
   }
@@ -184,10 +197,7 @@
   }
 
   .panel {
-    width: min(23rem, calc(100vw - 2rem));
-    max-height: calc(100vh - 2rem);
-    display: flex;
-    flex-direction: column;
+    width: min(18rem, calc(100vw - 2rem));
     border: 1px solid #1b1a18;
     background: #fff;
     box-shadow: 0 8px 30px rgb(0 0 0 / 0.18);
@@ -197,7 +207,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.6rem 0.75rem 0;
+    padding: 0.6rem 0.75rem 0.4rem;
   }
 
   h2 {
@@ -212,65 +222,81 @@
     line-height: 1;
   }
 
-  .hint {
-    padding: 0.2rem 0.75rem 0.6rem;
-    border-bottom: 1px solid #e4dfd5;
-    color: #6b665e;
-  }
-
-  .rows {
-    overflow-y: auto;
-    padding: 0.25rem 0.75rem;
-  }
-
-  fieldset {
+  .stepper {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.35rem 0.75rem;
-    margin: 0;
-    padding: 0.55rem 0;
-    border: 0;
-    border-bottom: 1px solid #efebe4;
-  }
-
-  legend {
-    float: left;
-    grid-column: 1 / -1;
-    padding: 0;
-    font-weight: 600;
-  }
-
-  select {
-    grid-column: 1 / -1;
-    padding: 0.3rem;
-    border: 1px solid #c9c2b5;
-    background: #fff;
-  }
-
-  .weight {
-    display: flex;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.75rem 0.6rem;
+  }
+
+  .stepper button {
+    width: 2.25rem;
+    padding: 0.25rem 0;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .stepper p {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     gap: 0.5rem;
   }
 
-  .weight input {
-    flex: 1;
-    min-width: 0;
+  .stepper strong {
+    font-size: 15px;
   }
 
-  output {
-    width: 2.25rem;
+  .stepper span {
+    color: #6b665e;
     font-variant-numeric: tabular-nums;
-    text-align: right;
   }
 
-  .italic {
+  .presets {
+    display: grid;
+    border-top: 1px solid #e4dfd5;
+    list-style: none;
+  }
+
+  .presets button {
     display: flex;
-    align-items: center;
-    gap: 0.3rem;
+    width: 100%;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-bottom: 1px solid #efebe4;
+    text-align: left;
+  }
+
+  .presets button:hover {
+    background: #f8f6f1;
+  }
+
+  .presets button.active {
+    background: #1b1a18;
+    color: #fff;
+  }
+
+  .preview {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .saved-tag {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+
+  .hint {
+    padding: 0.5rem 0.75rem 0;
+    color: #6b665e;
   }
 
   .manual-copy {
+    display: block;
+    width: calc(100% - 1.5rem);
     margin: 0.5rem 0.75rem 0;
     padding: 0.4rem;
     border: 1px solid #c9c2b5;
@@ -285,7 +311,6 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 0.75rem;
-    border-top: 1px solid #e4dfd5;
   }
 
   .status {

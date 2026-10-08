@@ -1,40 +1,30 @@
 /**
- * Which font each part of the CV uses.
- *
- * Values live in typography.json. Edit that file by hand, or use the
- * "Fonts" panel on the dev server (`npm run dev`) and press Save.
+ * Applies the active font preset (typography.json → typography-presets.ts)
+ * as CSS custom properties, e.g. --name-font, --name-weight, --name-style.
  */
 import { fonts, isFontName } from './fonts';
-import type { FontSetting } from './typography-format';
+import {
+  defaultPreset,
+  isPresetName,
+  presets,
+  roleKeys,
+  type FontSetting,
+  type PresetName,
+  type Role,
+  type Typography,
+} from './typography-presets';
 import saved from './typography.json';
 
-export type { FontSetting };
+export const savedPreset: PresetName = isPresetName(saved.preset) ? saved.preset : defaultPreset;
 
-export const roles = {
-  name: 'Name',
-  headline: 'Headline',
-  sectionTitle: 'Section headings',
-  profile: 'Profile text',
-  entryTitle: 'Entry titles',
-  entrySubtitle: 'Roles & degrees',
-  publicationTitle: 'Publication title',
-  labels: 'Small labels',
-  body: 'Body text',
-} as const;
-
-export type Role = keyof typeof roles;
-export type Typography = Record<Role, FontSetting>;
-
-export const roleKeys = Object.keys(roles) as Role[];
-
-export const typography: Typography = saved;
+export const typography: Typography = presets[savedPreset];
 
 /** 'sectionTitle' → '--section-title' */
 function varPrefix(role: Role): string {
   return `--${role.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
 }
 
-/** CSS custom properties for one role, e.g. --name-font, --name-weight, --name-style. */
+/** CSS custom properties for one role. */
 export function roleVars(role: Role, setting: FontSetting): [string, string][] {
   const prefix = varPrefix(role);
   const font = isFontName(setting.font) ? setting.font : 'Instrument Sans';
@@ -45,7 +35,7 @@ export function roleVars(role: Role, setting: FontSetting): [string, string][] {
   ];
 }
 
-/** The whole config as a `:root { … }` rule, rendered into <head>. */
+/** A whole preset as a `:root { … }` rule, rendered into <head>. */
 export function typographyCss(config: Typography): string {
   const declarations = roleKeys
     .flatMap((role) => roleVars(role, config[role]))

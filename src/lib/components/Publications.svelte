@@ -18,6 +18,9 @@
           <span>{item.status} · {item.venue}</span>
           <time datetime={item.year}>{item.year}</time>
         </p>
+        {#if item.note}
+          <p class="note">{item.note}</p>
+        {/if}
       </article>
     </li>
   {/each}
@@ -35,7 +38,7 @@
     font-family: var(--publication-title-font);
     font-weight: var(--publication-title-weight);
     font-style: var(--publication-title-style);
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     line-height: 1.3;
     text-wrap: pretty;
   }
@@ -56,10 +59,16 @@
     color: var(--ink-soft);
   }
 
+  .note {
+    margin-top: 0.2rem;
+    font-size: 0.9375rem;
+    color: var(--ink-soft);
+  }
+
   time {
+    font-family: var(--labels-font);
     font-size: 0.8125rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
     color: var(--ink-muted);
   }
 
@@ -75,6 +84,11 @@
 
     .meta {
       margin-top: 1.2mm;
+      font-size: 9.5pt;
+    }
+
+    .note {
+      margin-top: 0.5mm;
       font-size: 9.5pt;
     }
 

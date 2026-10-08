@@ -1,5 +1,5 @@
 /**
- * Fonts available to the typography config (src/lib/typography.json).
+ * Fonts used by the presets in typography-presets.ts.
  *
  * All are self-hosted. Browsers only download a font file when the page
  * actually uses it, so unused entries here cost nothing for visitors.
@@ -13,8 +13,6 @@ import '@fontsource-variable/source-serif-4/opsz.css';
 import '@fontsource-variable/source-serif-4/opsz-italic.css';
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/fraunces/wght-italic.css';
-import '@fontsource-variable/eb-garamond';
-import '@fontsource-variable/eb-garamond/wght-italic.css';
 import '@fontsource-variable/instrument-sans';
 import '@fontsource-variable/instrument-sans/wght-italic.css';
 import '@fontsource-variable/inter/opsz.css';
@@ -39,7 +37,6 @@ export const fonts = {
   Newsreader: { group: 'Serif', stack: `'Newsreader Variable', ${serif}` },
   'Source Serif 4': { group: 'Serif', stack: `'Source Serif 4 Variable', ${serif}` },
   Fraunces: { group: 'Serif', stack: `'Fraunces Variable', ${serif}` },
-  'EB Garamond': { group: 'Serif', stack: `'EB Garamond Variable', ${serif}` },
   'Instrument Sans': { group: 'Sans', stack: `'Instrument Sans Variable', ${sans}` },
   Inter: { group: 'Sans', stack: `'Inter Variable', ${sans}` },
   'Schibsted Grotesk': { group: 'Sans', stack: `'Schibsted Grotesk Variable', ${sans}` },

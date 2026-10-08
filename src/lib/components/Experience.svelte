@@ -34,14 +34,15 @@
 <style>
   .entries {
     display: grid;
-    gap: 2rem;
+    gap: 2.25rem;
     list-style: none;
   }
 
   .highlights {
     display: grid;
-    gap: 0.25rem;
-    margin-top: 0.6rem;
+    gap: 0.45rem;
+    margin-top: 0.75rem;
+    line-height: 1.5;
     list-style: none;
   }
 
@@ -58,7 +59,7 @@
   }
 
   .technologies {
-    margin-top: 0.6rem;
+    margin-top: 0.9rem;
     font-size: 0.9375rem;
   }
 
@@ -68,7 +69,7 @@
     font-weight: var(--labels-weight);
     font-style: var(--labels-style);
     font-size: 0.6875rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ink-muted);
   }
@@ -87,8 +88,13 @@
     }
 
     .highlights {
-      margin-top: 1.2mm;
-      gap: 0.6mm;
+      margin-top: 1.5mm;
+      gap: 1mm;
+      line-height: 1.4;
+    }
+
+    .technologies {
+      margin-top: 2mm;
     }
   }
 </style>

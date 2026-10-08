@@ -38,6 +38,8 @@ export interface Publication {
   venue: string;
   year: string;
   authors?: string;
+  /** Short context line, e.g. what the paper is based on. */
+  note?: string;
   /** DOI or publisher page, once available. */
   url?: string;
 }
@@ -116,7 +118,7 @@ export const cv: CV = {
         'Implemented multi-level access control, combining user-configurable permissions with organization-level policies based on Microsoft Entra ID groups.',
         'Worked directly with stakeholders on requirements and priorities.',
       ],
-      technologies: ['SvelteKit', 'TypeScript', 'PostgreSQL', 'SVG', 'Microsoft Entra ID'],
+      technologies: ['SvelteKit', 'TypeScript', 'PostgreSQL', 'Azure', 'Microsoft Entra ID', 'SVG'],
     },
   ],
 
@@ -127,6 +129,7 @@ export const cv: CV = {
       status: 'Accepted publication',
       venue: 'IEEE VR 2026 Workshop (WSR)',
       year: '2026',
+      note: 'Based on my master’s thesis at KTH.',
     },
   ],
 
@@ -136,7 +139,7 @@ export const cv: CV = {
       degree: 'M.Sc. Computer Science',
       period: { start: '2022', end: '2025' },
       description:
-        'Visualization track (information visualization and 3D graphics). Coursework included AI, deep learning, computer vision, and project-based development using agile methods.',
+        'Visualization track (information visualization and 3D graphics). Master’s thesis in visualization and augmented reality, including an AR platform built in Unity. Coursework included AI, deep learning, computer vision, and project-based development using agile methods.',
     },
     {
       institution: 'KTH Royal Institute of Technology',
@@ -158,22 +161,25 @@ export const cv: CV = {
     { label: 'Programming languages', items: ['TypeScript', 'C++', 'Python', 'C#'] },
     {
       label: 'Visualization & graphics',
-      items: ['Unity', 'Computer graphics', 'Technical visualization', 'Image and video processing'],
+      items: [
+        'Unity',
+        'Augmented reality',
+        'Computer graphics',
+        'Technical visualization',
+        'Image and video processing',
+      ],
     },
-    { label: 'Software development', items: ['Svelte', 'SvelteKit', 'React', 'REST APIs'] },
-    { label: 'Engineering', items: ['Fullstack development', 'Algorithms', 'System design', 'Git'] },
+    { label: 'Web & cloud', items: ['Svelte / SvelteKit', 'React', 'PostgreSQL', 'Azure', 'CI/CD'] },
   ],
 
   additionalExperience: [
     {
       organization: 'BarBro.app',
-      // Role and start year are unconfirmed; check both.
       role: 'Creator and developer',
       period: { start: '2026', end: 'present' },
       url: 'https://barbro.app/welcome',
       summary:
-        'An app for live performers, in invite-only beta: beat and bar detection with grid editing, local stem separation, spoken count-ins, click track, and Ableton export.',
-      todo: 'Confirm role and start year. Optionally add technologies.',
+        'An app for live performers, with beat and bar detection, local stem separation, spoken count-ins, a click track, and Ableton export.',
     },
     {
       organization: 'Simonstorp.se',

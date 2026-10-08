@@ -18,7 +18,7 @@
 <style>
   .entries {
     display: grid;
-    gap: 1.75rem;
+    gap: 2.25rem;
     list-style: none;
   }
 

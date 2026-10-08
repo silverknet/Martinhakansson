@@ -51,18 +51,16 @@
     padding-bottom: clamp(2.5rem, 6vw, 4rem);
   }
 
-  /* Phones and tablets: portrait above the name, so the name gets the full width. */
   .identity {
     grid-area: identity;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.25rem;
+    align-items: flex-end;
+    gap: clamp(1rem, 3vw, 1.75rem);
   }
 
   .portrait {
     flex: none;
-    width: clamp(5.5rem, 22vw, 7rem);
+    width: clamp(5rem, 18vw, 8rem);
     aspect-ratio: 1;
     height: auto;
     object-fit: cover;
@@ -72,7 +70,6 @@
   .titles {
     flex: 1;
     min-width: 0;
-    width: 100%;
     /* The name sizes itself to this box (cqi = 1% of its width). */
     container-type: inline-size;
   }
@@ -105,6 +102,7 @@
 
   .contact {
     grid-area: contact;
+    align-self: end;
   }
 
   dl {
@@ -124,7 +122,7 @@
     font-weight: var(--labels-weight);
     font-style: var(--labels-style);
     font-size: 0.6875rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ink-muted);
   }
@@ -133,28 +131,14 @@
     overflow-wrap: anywhere;
   }
 
-  /* Desktop and print: portrait beside the name. */
-  @media print, (min-width: 56rem) {
-    .identity {
-      flex-direction: row;
-      align-items: flex-end;
-      gap: 1.75rem;
-    }
-
-    .portrait {
-      width: 8rem;
-    }
-  }
-
-  /* Desktop: name row spans the page; contact sits beside the buttons, over the sidebar. */
   @media screen and (min-width: 56rem) {
     .masthead {
       grid-template-columns: minmax(0, 1fr) var(--sidebar);
       grid-template-areas:
-        'identity identity'
-        'download contact';
+        'identity contact'
+        'download .';
       column-gap: var(--gutter);
-      row-gap: 2.25rem;
+      row-gap: 2rem;
     }
   }
 
@@ -168,10 +152,6 @@
 
     .download {
       display: none;
-    }
-
-    .contact {
-      align-self: end;
     }
 
     .identity {

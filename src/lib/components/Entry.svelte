@@ -41,33 +41,39 @@
     font-weight: var(--entry-title-weight);
     font-style: var(--entry-title-style);
     font-size: 1.0625rem;
-    line-height: 1.35;
-    letter-spacing: -0.005em;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
   }
 
+  /* Smaller than the title, so title → role → description reads as a clear hierarchy. */
   .subtitle {
     grid-area: subtitle;
+    margin-top: 0.15rem;
     font-family: var(--entry-subtitle-font);
     font-weight: var(--entry-subtitle-weight);
     font-style: var(--entry-subtitle-style);
-    font-size: 1.125rem;
+    font-size: 1rem;
     line-height: 1.35;
-    color: var(--ink-soft);
+    color: var(--ink);
   }
 
   .period {
     grid-area: period;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.3rem;
+    font-family: var(--labels-font);
+    font-weight: 400;
     font-size: 0.8125rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
     color: var(--ink-muted);
     white-space: nowrap;
   }
 
+  /* The sidebar sets --entry-body-size to a smaller size for its narrow column. */
   .body {
-    margin-top: 0.55rem;
+    margin-top: 0.65rem;
     max-width: 40em;
+    font-size: var(--entry-body-size, 1rem);
+    line-height: 1.55;
     color: var(--ink-soft);
     text-wrap: pretty;
   }
@@ -78,7 +84,7 @@
       grid-template-areas:
         'title period'
         'subtitle subtitle';
-      column-gap: 1.5rem;
+      column-gap: 1.25rem;
       align-items: baseline;
     }
 
@@ -97,7 +103,8 @@
     }
 
     .subtitle {
-      font-size: 11pt;
+      margin-top: 0.3mm;
+      font-size: 10pt;
     }
 
     .period {
@@ -105,8 +112,9 @@
     }
 
     .body {
-      margin-top: 1.2mm;
+      margin-top: 1.5mm;
       max-width: none;
+      line-height: 1.45;
     }
   }
 </style>

@@ -25,17 +25,24 @@ All content is in **[src/lib/cv.ts](src/lib/cv.ts)**: profile, experience, publi
 
 ## Fonts
 
-Each part of the CV (name, headline, section headings, profile text, entry titles, roles, publication title, small labels, body text) has its own font, weight and italic setting in **[src/lib/typography.json](src/lib/typography.json)**.
+The site uses one of five font presets, which set the font for every part of the CV at once. The active one is named in **[src/lib/typography.json](src/lib/typography.json)**, e.g. `{ "preset": "Editorial" }`.
 
-To experiment, run `npm run dev` and click **Aa Fonts** in the bottom-right corner. Changes preview live.
+| Preset | Style |
+| --- | --- |
+| Editorial | Newsreader serif headings with Instrument Sans text (the original design) |
+| Swiss | Schibsted Grotesk throughout |
+| Classic | Source Serif 4 throughout |
+| Technical | Geist with Geist Mono labels |
+| Expressive | Fraunces headings with Inter text |
 
-- **Save** writes them to `typography.json`, which the live site and the PDF use.
-- **Copy JSON** copies the current settings without saving, for example to paste into a chat.
-- **Reset** returns to the saved settings.
+To compare them, run `npm run dev` and click **Aa Fonts** in the bottom-right corner. Use ‹ › or the arrow keys to flip through, or click a preset.
+
+- **Save** writes the choice to `typography.json`, which the live site and the PDF use.
+- **Copy JSON** copies the choice without saving.
 
 The panel exists only on the dev server. It is not part of the built site or the PDF.
 
-Available fonts are listed in [src/lib/fonts.ts](src/lib/fonts.ts). All are self-hosted, and visitors only download the ones in use. To add one, install its `@fontsource-variable/…` package and add it there.
+Presets are defined in [src/lib/typography-presets.ts](src/lib/typography-presets.ts) and the fonts in [src/lib/fonts.ts](src/lib/fonts.ts). All fonts are self-hosted, and visitors only download the ones the active preset uses.
 
 ## How the PDF works
 
@@ -68,10 +75,11 @@ src/entry-server.ts            server entry used only for prerendering
 src/app.css                    design tokens, base styles, print/page setup
 src/App.svelte                 page layout (two columns on desktop/print, one on mobile)
 src/lib/cv.ts                  ← all CV content
-src/lib/typography.json        ← font per element (edit by hand or via the Fonts panel)
-src/lib/typography.ts          turns typography.json into CSS variables
+src/lib/typography.json        ← active font preset (edit by hand or via the Fonts panel)
+src/lib/typography-presets.ts  the five presets
+src/lib/typography.ts          turns the active preset into CSS variables
 src/lib/fonts.ts               available fonts
-src/lib/dev/FontPanel.svelte   dev-only font editor
+src/lib/dev/FontPanel.svelte   dev-only preset switcher
 src/lib/components/            CVHeader, DownloadButton, Section, Entry, Experience,
                                Publications, Education, Skills, DateRange, Meta (SEO)
 ```

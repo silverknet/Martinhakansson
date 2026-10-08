@@ -30,7 +30,7 @@
     font-weight: var(--labels-weight);
     font-style: var(--labels-style);
     font-size: 0.6875rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ink-muted);
   }
