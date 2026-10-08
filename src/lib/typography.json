@@ -1,0 +1,11 @@
+{
+  "name": { "font": "Newsreader", "weight": 400, "italic": false },
+  "headline": { "font": "Instrument Sans", "weight": 500, "italic": false },
+  "sectionTitle": { "font": "Newsreader", "weight": 400, "italic": false },
+  "profile": { "font": "Newsreader", "weight": 400, "italic": false },
+  "entryTitle": { "font": "Instrument Sans", "weight": 600, "italic": false },
+  "entrySubtitle": { "font": "Newsreader", "weight": 400, "italic": true },
+  "publicationTitle": { "font": "Newsreader", "weight": 450, "italic": false },
+  "labels": { "font": "Instrument Sans", "weight": 600, "italic": false },
+  "body": { "font": "Instrument Sans", "weight": 400, "italic": false }
+}
