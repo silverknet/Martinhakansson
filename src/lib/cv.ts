@@ -113,7 +113,7 @@ export const cv: CV = {
       summary:
         'Primary developer of a fullstack planning and visualization platform, responsible for its technical planning, architecture, and implementation.',
       highlights: [
-        'Designed a configurable, domain-agnostic architecture, so users can set up their own data, schedules, and visualizations without new code.',
+        'Designed a configurable, domain-agnostic architecture that lets users define their own data, schedules, and visualizations.',
         'Built an SVG-based floorplan visualization system that connects custom layouts to planning data.',
         'Implemented multi-level access control, combining user-configurable permissions with organization-level policies based on Microsoft Entra ID groups.',
         'Worked directly with stakeholders on requirements and priorities.',
